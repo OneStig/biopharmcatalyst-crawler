@@ -4,14 +4,19 @@
 from selenium import webdriver
 from bs4 import BeautifulSoup
 import json
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
 
 class Drug:
-    def __init__(self, name, indication, stage, newstxt, newslink):
-        self.name = name
-        self.indication = indication
-        self.stage = stage
-        self.newstxt = newstxt
-        self.newslink = newslink
+    def __init__(self, name, indication, stage, newstxt, newslink, company):
+        self.name = name.replace("\n", "").replace('"', "")
+        self.indication = indication.replace("\n", "").replace('"', "")
+        self.stage = stage.replace("\n", "").replace('"', "")
+        self.newstxt = newstxt.replace("\n", "").replace('"', "")
+        self.newslink = newslink.replace("\n", "").replace('"', "")
+        self.company = company.replace("\n", "").replace('"', "")
 
 def dumper(obj):
     try:
@@ -29,7 +34,7 @@ soup = BeautifulSoup(driver.page_source, "lxml")
 
 companydiv = soup.findAll("div", {"class": "filter-table__row js-tr"})
 
-companydrugs = dict()
+companydrugs = []
 
 for company in companydiv:
 
@@ -73,11 +78,9 @@ for company in companydiv:
             news = "None"
         
 
-        addeddrug = Drug(name, ind, stage, news, link)
+        addeddrug = Drug(name, ind, stage, news, link, companyname)
 
-        drugs.append(addeddrug)
-
-    companydrugs[companyname] = drugs
+        companydrugs.append(addeddrug)
 
 # data = json.dumps(companydrugs, default=dumper, indent=2, ensure_ascii=False)
 
